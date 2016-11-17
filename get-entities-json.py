@@ -12,8 +12,8 @@ request = requests.get(URI)
 
 #check for HTTP codes other than 200
 if request.status_code != 200:
-    print('Status:', request.status_code, 'Problem with the request. Exiting.')
-    exit()
+  print('Status:', request.status_code, 'Problem with the request. Exiting.')
+  exit()
 
 #convert into a python object
 #data = request.json()
@@ -24,5 +24,5 @@ data = json.loads(request.text)
 
 #for each element, item, in data.itemListElement,
 for item in data['itemListElement']:
-    #print name, id, and short description
-    print (item['result']['name'], item['result']['@id'], item['result']['description'])
+  #print name, id, and short description
+  print (item['result']['name'], item['result']['@id'], item['result']['description'])
