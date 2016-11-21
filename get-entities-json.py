@@ -16,7 +16,6 @@ if request.status_code != 200:
   exit()
 
 #convert into a python object
-#data = request.json()
 data = json.loads(request.text)
 
 #pretty print JSON for diagnostics 
