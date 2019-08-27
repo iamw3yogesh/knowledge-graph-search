@@ -19,7 +19,6 @@ $pageLastModified = date ('c', getlastmod());
 <html lang="en-US" id="page" prefix="og: http://ogp.me/ns#" vocab="http://schema.org/" typeof="WebPage" resource="<?php echo $protocol.$server.$path.'/'.$fileName; ?>#page">
 <head>
 <meta charset="utf-8">
-<meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo $pageTitle; ?></title>
@@ -48,8 +47,8 @@ label{position:absolute;overflow:hidden;clip: rect(0 0 0 0);height:1px;width:1px
 .result {overflow-wrap:break-word;word-wrap:break-word;-ms-word-break:break-all;word-break:break-all;word-break:break-word;-ms-hyphens:auto;-moz-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;}
 .result li:not(:last-child) {border-bottom:1px solid #ccc;margin-bottom:1em;padding-bottom:1em;}
 @media all and (max-width:30.063em) {
-        input.search{width:85%;}
-        .button{display:block;margin:auto;}
+	input.search{width:85%;}
+	.button{display:block;margin:auto;}
 }
 </style>
 </head>
@@ -59,17 +58,17 @@ label{position:absolute;overflow:hidden;clip: rect(0 0 0 0);height:1px;width:1px
 <div class="container">
 <h1 class="site-title"><a href="../../index.html">Jason A. Clark</a></h1>
 <nav class="nav" id="nav" role="navigation" typeof="SiteNavigationElement" resource="<?php echo $protocol.$server.$path.'/'.$fileName; ?>#nav">
-        <a class="content-link" property="name url" href="../../about.html">about</a>
-        <a class="content-link" property="name url" href="../../code.html">code</a>
-        <a class="content-link" property="name url" href="../../talks.html">talks</a>
+	<a class="content-link" property="name url" href="../../about.html">about</a>
+	<a class="content-link" property="name url" href="../../code.html">code</a>
+	<a class="content-link" property="name url" href="../../talks.html">talks</a>
 </nav>
 </div>
 </header>
 <main id="work" role="main" property="mainEntity" typeof="CreativeWork" resource="<?php echo $protocol.$server.$path.'/'.$fileName; ?>#work">
 <div class="content" property="text">
 <section aria-label="main content">
-        <h1 property="alternativeHeadline name"><?php echo $pageTitle; ?></h1>
-        <p class="center" property="about description">Search across entities and schema.org types.</p>
+	<h1 property="alternativeHeadline name"><?php echo $pageTitle; ?></h1>
+	<p class="center" property="about description">Search across entities and schema.org types.</p>
 <?php
 // Set default value for query
 $q = isset($_GET['q']) ? urlencode(strip_tags(trim($_GET['q']))) : null;
@@ -95,11 +94,11 @@ $v = isset($_GET['v']) ? strip_tags((int)$_GET['v']) : 'v1';
 // Set user API key for Google Knowledge Graph API
 $key = isset($_GET['key']) ? $_GET['key'] : 'ADD-YOUR-GOOGLE-KNOWLEDGE-GRAPH-API-KEY-HERE';
 ?>
-        <form method="get" action="index.html">
-                <label for="q">Enter search query:</label>
-                <input class="search" type="text" name="q" id="q" tabindex="1" placeholder="Search..." value="<?php if (!is_null($q)) { echo urldecode($q); } ?>" required />
-                <input class="button" type="submit" value="Search" />
-        </form>
+	<form method="get" action="index.html">
+		<label for="q">Enter search query:</label>		
+		<input class="search" type="text" name="q" id="q" tabindex="1" placeholder="Search..." value="<?php if (!is_null($q)) { echo urldecode($q); } ?>" required />
+		<input class="button" type="submit" value="Search" />
+	</form>	
 <?php
 if (!is_null($q)) {
 // Process query
@@ -122,74 +121,112 @@ $response = json_decode(curl_exec($ch), true);
 curl_close($ch);
 ?>
 <p class="result"><strong>Entity search for <?php echo '"'.urldecode($q).'"'.(is_null($type) ? "" : "with a type of <em>$type</em>"); ?></strong></p>
-        <ol class="result">
+	<ol class="result">
 <?php
 if (empty($response['itemListElement'][0][result])) { 
 ?>
-                <li style="list-style:none;">Is that made up? That sounds made up. We couldn't find any matches. Can you try a different query?</li>
+		<li style="list-style:none;">Is that made up? That sounds made up. We couldn't find any matches. Can you try a different query?</li>
 <?php
 } else {
-        foreach ($response['itemListElement'] as $item) {
+	foreach ($response['itemListElement'] as $item) {
 ?>
-                <li>
+		<li>
 <?php
-                $image = isset($item['result']['image']['contentUrl']) ? $item['result']['image']['contentUrl'] : null;
-                if (is_null($image)) {
-                echo '<svg width="150" height="150"><text x="2" y="15" fill="red">Image not available</text><rect x="0" y="0" width="150" height="150" style="fill:blue;stroke:grey;stroke-width:1;fill-opacity:0.1;stroke-opacity:0.9">Sorry, your browser does not support inline SVG.
-                </svg>';
-                } else {
-                echo '<img src="'.$image.'" />';
-                }
+		$image = isset($item['result']['image']['contentUrl']) ? $item['result']['image']['contentUrl'] : null;
+		if (is_null($image)) {
+		echo '<svg width="150" height="150"><text x="2" y="15" fill="red">Image not available</text><rect x="0" y="0" width="150" height="150" style="fill:blue;stroke:grey;stroke-width:1;fill-opacity:0.1;stroke-opacity:0.9">Sorry, your browser does not support inline SVG.
+		</svg>';
+		} else {
+			//rewrite https into image URL as Knowledge Graph API serves http
+			if (strpos($image, 'http://') == 0) {
+				$image = 'https://' . substr($image, 7);
+			}
+		echo '<img src="'.$image.'" />';
+		}
 ?>
-                <br />
-                <strong><?php echo $item['result']['name']; ?></strong>
-                <br />
+		<br />
+		<strong><?php echo $item['result']['name']; ?></strong>
+		<br />
 <?php
-                $url = isset($item['result']['url']) ? $item['result']['url'] : null;
-                if (is_null($url)) {
-                echo 'No URL available.';
-                } else {
-                echo '<a href="'.$url.'">'.$url.'</a>';                         
-                }
+		$url = isset($item['result']['url']) ? $item['result']['url'] : null;
+		if (is_null($url)) {
+		echo 'No URL available.';
+		} else {
+		echo '<a href="'.$url.'">'.$url.'</a>';				
+		}
 ?>
-                <br />
+		<br />
+		<span property="about">
 <?php
-                $description = isset($item['result']['description']) ? $item['result']['description'] : 'No short description available.';
-                echo $description;
+		$description = isset($item['result']['description']) ? $item['result']['description'] : 'No short description available.';
+		echo $description;
 ?>
-                <br />
+		</span>
+		<br />
+<?php
+		$body = isset($item['result']['detailedDescription']['articleBody']) ? $item['result']['detailedDescription']['articleBody'] : 'Wikipedia snippet not available.';
+		echo $body;
+?>
+		<br />
+                equivalencies:
+                <br/>
 <?php
                 $wikipedia = isset($item['result']['detailedDescription']['url']) ? $item['result']['detailedDescription']['url'] : null;
                 if (is_null($wikipedia)) {
                 echo 'Wikipedia URL not available.';
                 } else {
-                echo '<a href="'.$wikipedia.'">'.$wikipedia.'</a>';                             
+                echo '<a href="'.$wikipedia.'">'.$wikipedia.'</a>';
+                echo '<br />';                  
+                $page_path = parse_url($wikipedia, PHP_URL_PATH);
+                $page_file = basename($page_path);
+                $dbpedia = 'http://dbpedia.org/resource/'.$page_file;        
+                echo '<a href="'.$dbpedia.'">'.$dbpedia.'</a>';
+
+echo '<br />';
+//$url = 'http://sameas.org/json?uri='.$dbpedia;
+$url = 'https://en.wikipedia.org/w/api.php?action=query&prop=pageprops&ppprop=wikibase_item&titles='.$page_file.'&formatversion=2&format=json';
+// View source to see raw API call - REMOVE from production code
+echo '<!--' . $url . '-->';
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+$response = json_decode(curl_exec($ch), true);
+//echo '<pre>'.var_dump($response).'</pre>';
+curl_close($ch);
+                        //if ($response[0]['numDuplicates'] <= 1) {
+                        //echo '<br />No sameAs equivalency.';
+			$wikidata = $response['query']['pages'][0]['pageprops']['wikibase_item'];
+			if (is_null($wikidata)) {
+                        echo '<br />No wikidata equivalency.';
+                        } else {
+                        //$wikidata = $response[0]['uri'];
+                        echo '<a href="https://www.wikidata.org/wiki/'.$wikidata.'">https://www.wikidata.org/wiki/'.$wikidata.'</a><br/>';
+			echo 'wikidata id: '.$wikidata;
+                        }
+
                 }
 ?>
-                <br />
+		<br/>
+		knowledge graph id:
+		<a title="view knowledge panel" href="https://www.google.com/search?kgmid=<?php echo substr($item['result']['@id'], "3"); ?>&hl=en-US&kgs=3159ec19c6481312&q=<?php echo urlencode($item['result']['name']); ?>&shndl=0&source=sh/x/kp/osrp&entrypoint=sh/x/kp/osrp"><?php echo $item['result']['@id']; ?></a>
+		<br />
+		score:
+		<?php echo $item['resultScore']; ?>
+		<br />
+		type(s): 
 <?php
-                $body = isset($item['result']['detailedDescription']['articleBody']) ? $item['result']['detailedDescription']['articleBody'] : 'Wikipedia snippet not available.';
-                echo $body;
+	foreach ($item['result']['@type'] as $type) {
 ?>
-                <br />
-                <?php echo 'knowledge graph id: '.$item['result']['@id']; ?>
-                <br />
-                <?php echo 'score: '.$item['resultScore']; ?>
-                <br />
-                type(s):
+		<a property="additionalType" href="index.html?q=<?php echo urlencode($_GET['q']).'&amp;type='.$type; ?>"><?php echo $type; ?></a>
 <?php
-        foreach ($item['result']['@type'] as $type) {
+	}
 ?>
-                <span><a href="index.html?q=<?php echo urlencode($_GET['q']).'&amp;type='.$type; ?>"><?php echo $type; ?></a></span>
+		</li>
 <?php
-        }
-?>
-                </li>
-<?php
-        }// End foreach loop
+	}// End foreach loop
 }// End if/else check for empty resultset
 ?>
-        </ul>
+	</ul>
 <?php
 } // End (!is_null($q))
 ?>
@@ -197,15 +234,15 @@ if (empty($response['itemListElement'][0][result])) {
 </div>
 </main>
 <footer role="contentinfo" aria-label="site footer including navigation and copyright">
-        <hr class="border-ftr">
-        <p class="nav center">
-                <a property="relatedLink" href="../../search.html">Search</a>
-                <a property="relatedLink" href="http://feeds.feedburner.com/diginit">Feed</a>
-                <a property="relatedLink" href="../../sitemap.html">Sitemap</a>
-        </p>
-        <p class="center">
-                &copy; <a property="author creator copyrightHolder reviewedBy" href="https://plus.google.com/103883366387427181221?rel=author">Jason A. Clark</a>  <time property="dateModified lastReviewed" datetime="2016-02-18T18:44:03-07:00" title="published 2016-02-18T18:44:03-07:00">2016</time>
-        </p>
+	<hr class="border-ftr">
+	<p class="nav center">
+		<a property="relatedLink" href="../../search.html">Search</a>
+		<a property="relatedLink" href="http://feeds.feedburner.com/diginit">Feed</a>
+		<a property="relatedLink" href="../../sitemap.html">Sitemap</a>
+	</p>
+	<p class="center">
+		&copy; <a property="author creator copyrightHolder reviewedBy" href="https://plus.google.com/103883366387427181221?rel=author">Jason A. Clark</a>  <time property="dateModified lastReviewed" datetime="2016-02-18T18:44:03-07:00" title="published 2016-02-18T18:44:03-07:00">2016</time>
+	</p>
 </footer>
 </div>
 <script>
@@ -213,7 +250,7 @@ if (empty($response['itemListElement'][0][result])) {
         (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
         })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-        ga('create', 'YOUR-GOOGLE-ANALYTICS-ID-HERE', 'auto');
+        ga('create', 'UA-19716241-1', 'auto');
         ga('send', 'pageview');
 </script>
 </body>
